@@ -1,0 +1,155 @@
+import React, { useCallback } from 'react';
+import { useRouter } from 'next/router';
+import { PlayIcon, ChevronDownIcon } from '@heroicons/react/24/solid';
+import { MovieInterface } from '@/types';
+import FavoriteButton from '@/components/FavoriteButton';
+import useInfoModal from '@/hooks/useInfoModal';
+import Image from 'next/image';
+
+interface MovieCardProps {
+  data: MovieInterface;
+}
+
+const MovieCard: React.FC<MovieCardProps> = ({ data }) => {
+  const router = useRouter();
+  const { openModal } = useInfoModal();
+
+  const redirectToWatch = useCallback(() => {
+    router.push(`/watch/${data.id}`);
+  }, [router, data.id]);
+
+  return (
+    <div className="group bg-zinc-900 col-span relative h-[12vw]">
+      <Image
+        onClick={redirectToWatch}
+        src={data.thumbnailUrl}
+        alt="Movie"
+        draggable={false}
+        className="
+          cursor-pointer
+          object-cover
+          transition
+          duration-200
+          shadow-xl
+          rounded-md
+          group-hover:opacity-90
+          sm:group-hover:opacity-0
+          delay-300
+          w-full
+          h-[12vw]
+        "
+        width={500} /* Ajusta el tamaño según sea necesario */
+        height={300} /* Ajusta el tamaño según sea necesario */
+        layout="intrinsic"
+        placeholder="blur" /* Muestra una imagen difusa mientras carga */
+        blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zY3JlZW5zcmVzdXJmZWN0aW9ucyIgZmlsbD0ibm9uZSIgaGVpZ2h0PSI4MDAiIHdpZHRoPSI4MDAiPjxwYXRoIGQ9Ik0xMjAsMCBDODcsMCA2MCwwIDI1LDEgTDE5LDYgTDI2LDEgTDQwLDEuMCAwMCwwIDAsMEwwLDEgIiBzdHJva2U9InN0YXJ0Q3VsdG1hdC0wIiBzdHJva2UtbGluZWNhcD0iY2VsaW5nIj48L3BhdGg+PC9zdmc+Cg==" 
+      />
+
+      <div className="
+        opacity-0
+        absolute
+        top-0
+        transition
+        duration-200
+        z-10
+        invisible
+        sm:visible
+        delay-300
+        w-full
+        scale-0
+        group-hover:scale-110
+        group-hover:-translate-y-[6vw]
+        group-hover:translate-x-[2vw]
+        group-hover:opacity-100
+      ">
+        <Image
+          onClick={redirectToWatch}
+          src={data.thumbnailUrl}
+          alt="Movie"
+          draggable={false}
+          className="
+            cursor-pointer
+            object-cover
+            transition
+            duration-200
+            shadow-xl
+            rounded-t-md
+            w-full
+            h-[12vw]
+          "
+          width={500} /* Ajusta el tamaño según sea necesario */
+          height={300} /* Ajusta el tamaño según sea necesario */
+          layout="intrinsic"
+          placeholder="blur" /* Muestra una imagen difusa mientras carga */
+          blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zY3JlZW5zcmVzdXJmZWN0aW9ucyIgZmlsbD0ibm9uZSIgaGVpZ2h0PSI4MDAiIHdpZHRoPSI4MDAiPjxwYXRoIGQ9Ik0xMjAsMCBDODcsMCA2MCwwIDI1LDEgTDE5LDYgTDI2LDEgTDQwLDEuMCAwMCwwIDAsMEwwLDEgIiBzdHJva2U9InN0YXJ0Q3VsdG1hdC0wIiBzdHJva2UtbGluZWNhcD0iY2VsaW5nIj48L3BhdGg+PC9zdmc+Cg==" 
+        />
+        <div className="
+          z-10
+          bg-zinc-800
+          p-2
+          lg:p-4
+          absolute
+          w-full
+          transition
+          shadow-md
+          rounded-b-md
+        ">
+          <div className="flex flex-row items-center gap-3">
+            <div
+              onClick={redirectToWatch}
+              className="
+                cursor-pointer 
+                w-6 
+                h-6 
+                lg:w-10 
+                lg:h-10 
+                bg-white 
+                rounded-full 
+                flex 
+                justify-center 
+                items-center 
+                transition 
+                hover:bg-neutral-300
+              "
+            >
+              <PlayIcon className="text-black w-4 lg:w-6" />
+            </div>
+            <FavoriteButton movieId={data.id} />
+            <div
+              onClick={() => openModal(data?.id)}
+              className="
+                cursor-pointer 
+                ml-auto 
+                w-6 
+                h-6 
+                lg:w-10 
+                lg:h-10 
+                border-white 
+                border-2 
+                rounded-full 
+                flex 
+                justify-center 
+                items-center 
+                transition 
+                hover:border-neutral-300
+              "
+            >
+              <ChevronDownIcon className="text-white w-4 lg:w-6" />
+            </div>
+          </div>
+          <p className="text-green-400 font-semibold mt-4">
+            New <span className="text-white">2023</span>
+          </p>
+          <div className="flex flex-row mt-4 gap-2 items-center">
+            <p className="text-white text-[10px] lg:text-sm">{data.duration}</p>
+          </div>
+          <div className="flex flex-row items-center gap-2 mt-4 text-[8px] text-white lg:text-sm">
+            <p>{data.genre}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MovieCard;
