@@ -1,8 +1,7 @@
-import { PrismaClient } from '@prisma/client';
-
+// global.d.ts
 declare global {
-    namespace globalThis {
-        var prismasdb: PrismaClient 
-
-    }
-}
+    var _mongoClientPromise: Promise<MongoClient> | undefined;
+  }
+  
+  export {};
+  

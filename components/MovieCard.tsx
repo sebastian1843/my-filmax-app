@@ -19,132 +19,62 @@ const MovieCard: React.FC<MovieCardProps> = ({ data }) => {
   }, [router, data.id]);
 
   return (
-    <div className="group bg-zinc-900 col-span relative h-[12vw]">
+    <div className="group relative col-span h-[12vw] bg-neutral-900 rounded-md overflow-hidden shadow-md transition duration-300 hover:scale-105">
+      {/* Imagen de portada */}
       <Image
-        onClick={redirectToWatch}
         src={data.thumbnailUrl}
-        alt="Movie"
+        alt={data.title}
+        onClick={redirectToWatch}
+        className="w-full h-full object-cover cursor-pointer transition-opacity duration-300 group-hover:opacity-70"
+        width={500}
+        height={300}
+        placeholder="blur"
+        blurDataURL="data:image/svg+xml;base64,..."
         draggable={false}
-        className="
-          cursor-pointer
-          object-cover
-          transition
-          duration-200
-          shadow-xl
-          rounded-md
-          group-hover:opacity-90
-          sm:group-hover:opacity-0
-          delay-300
-          w-full
-          h-[12vw]
-        "
-        width={500} /* Ajusta el tamaño según sea necesario */
-        height={300} /* Ajusta el tamaño según sea necesario */
-        layout="intrinsic"
-        placeholder="blur" /* Muestra una imagen difusa mientras carga */
-        blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zY3JlZW5zcmVzdXJmZWN0aW9ucyIgZmlsbD0ibm9uZSIgaGVpZ2h0PSI4MDAiIHdpZHRoPSI4MDAiPjxwYXRoIGQ9Ik0xMjAsMCBDODcsMCA2MCwwIDI1LDEgTDE5LDYgTDI2LDEgTDQwLDEuMCAwMCwwIDAsMEwwLDEgIiBzdHJva2U9InN0YXJ0Q3VsdG1hdC0wIiBzdHJva2UtbGluZWNhcD0iY2VsaW5nIj48L3BhdGg+PC9zdmc+Cg==" 
       />
 
-      <div className="
-        opacity-0
-        absolute
-        top-0
-        transition
-        duration-200
-        z-10
-        invisible
-        sm:visible
-        delay-300
-        w-full
-        scale-0
-        group-hover:scale-110
-        group-hover:-translate-y-[6vw]
-        group-hover:translate-x-[2vw]
-        group-hover:opacity-100
-      ">
-        <Image
-          onClick={redirectToWatch}
-          src={data.thumbnailUrl}
-          alt="Movie"
-          draggable={false}
-          className="
-            cursor-pointer
-            object-cover
-            transition
-            duration-200
-            shadow-xl
-            rounded-t-md
-            w-full
-            h-[12vw]
-          "
-          width={500} /* Ajusta el tamaño según sea necesario */
-          height={300} /* Ajusta el tamaño según sea necesario */
-          layout="intrinsic"
-          placeholder="blur" /* Muestra una imagen difusa mientras carga */
-          blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zY3JlZW5zcmVzdXJmZWN0aW9ucyIgZmlsbD0ibm9uZSIgaGVpZ2h0PSI4MDAiIHdpZHRoPSI4MDAiPjxwYXRoIGQ9Ik0xMjAsMCBDODcsMCA2MCwwIDI1LDEgTDE5LDYgTDI2LDEgTDQwLDEuMCAwMCwwIDAsMEwwLDEgIiBzdHJva2U9InN0YXJ0Q3VsdG1hdC0wIiBzdHJva2UtbGluZWNhcD0iY2VsaW5nIj48L3BhdGg+PC9zdmc+Cg==" 
-        />
-        <div className="
-          z-10
-          bg-zinc-800
-          p-2
-          lg:p-4
-          absolute
-          w-full
-          transition
-          shadow-md
-          rounded-b-md
-        ">
-          <div className="flex flex-row items-center gap-3">
-            <div
+      {/* Overlay al hacer hover */}
+      <div className="absolute top-0 left-0 w-full h-full opacity-0 scale-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-300 z-20 bg-zinc-900 bg-opacity-90 p-4 rounded-md">
+        <div className="flex flex-col h-full justify-between">
+          {/* Imagen y título */}
+          <div>
+            <Image
+              src={data.thumbnailUrl}
+              alt={data.title}
+              className="rounded-md mb-2 w-full object-cover"
+              width={500}
+              height={300}
+              draggable={false}
+            />
+            <h3 className="text-white text-lg font-semibold truncate">{data.title}</h3>
+            <p className="text-gray-400 text-sm mt-1">{data.genre}</p>
+          </div>
+
+          {/* Botones de acción */}
+          <div className="flex items-center justify-between mt-4">
+            <button
               onClick={redirectToWatch}
-              className="
-                cursor-pointer 
-                w-6 
-                h-6 
-                lg:w-10 
-                lg:h-10 
-                bg-white 
-                rounded-full 
-                flex 
-                justify-center 
-                items-center 
-                transition 
-                hover:bg-neutral-300
-              "
+              className="bg-white text-black rounded-full p-2 hover:bg-neutral-300 transition"
+              aria-label="Play"
             >
-              <PlayIcon className="text-black w-4 lg:w-6" />
-            </div>
+              <PlayIcon className="w-6 h-6" />
+            </button>
+
             <FavoriteButton movieId={data.id} />
-            <div
-              onClick={() => openModal(data?.id)}
-              className="
-                cursor-pointer 
-                ml-auto 
-                w-6 
-                h-6 
-                lg:w-10 
-                lg:h-10 
-                border-white 
-                border-2 
-                rounded-full 
-                flex 
-                justify-center 
-                items-center 
-                transition 
-                hover:border-neutral-300
-              "
+
+            <button
+              onClick={() => openModal(data.id)}
+              className="border border-white text-white rounded-full p-2 hover:border-gray-300 transition"
+              aria-label="More Info"
             >
-              <ChevronDownIcon className="text-white w-4 lg:w-6" />
-            </div>
+              <ChevronDownIcon className="w-6 h-6" />
+            </button>
           </div>
-          <p className="text-green-400 font-semibold mt-4">
-            New <span className="text-white">2023</span>
-          </p>
-          <div className="flex flex-row mt-4 gap-2 items-center">
-            <p className="text-white text-[10px] lg:text-sm">{data.duration}</p>
-          </div>
-          <div className="flex flex-row items-center gap-2 mt-4 text-[8px] text-white lg:text-sm">
-            <p>{data.genre}</p>
+
+          {/* Datos adicionales */}
+          <div className="mt-2 text-xs text-white flex justify-between">
+            <span className="text-green-400">Estreno 2023</span>
+            <span>{data.duration}</span>
           </div>
         </div>
       </div>

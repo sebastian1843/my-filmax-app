@@ -1,75 +1,50 @@
-import NextAuth from "next-auth";
-import Credentials  from "next-auth/providers/credentials";
-import { compare } from "bcrypt";
+import NextAuth, { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
+import clientPromise from "../../../lib/mongodb";
+import { compare } from "bcryptjs";
 
-import GithubProvider from "next-auth/providers/github";
-import GoogleProvider from "next-auth/providers/google";
-
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-
-import prismadb from "@/lib/prismadb";
-
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
+  adapter: MongoDBAdapter(clientPromise),
   providers: [
-    GithubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID || "",
-      clientSecret: process.env.GITHUB_SECRET || "",
-    }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-    }),
-    Credentials({
-        id:"credentials",
-        name: "Credentials",
-        credentials: {
-          email : {
-            label: "Email",
-            type: "text",
-         },
-          password : {
-            label: "Password",
-            type: "password",
-          }
-        },
-        async authorize(credentials) {
-          if (!credentials?.email || !credentials.password) {
-               throw new Error('Email and password required');
-          }
-
-          const user= await prismadb.user.findUnique({
-            where: {
-                email: credentials.email
-            }
-        })
-
-        if (!user || !user.hashedPassword) {
-            throw new Error('Email does not exist');
-        }  
-        
-        const isCorrectPassword = await compare(
-            credentials.password,
-            user.hashedPassword
-        );
-
-        if (!isCorrectPassword) {
-            throw new Error('Incorrect password');
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Faltan las credenciales.");
         }
 
-        return user;
+        const client = await clientPromise;
+        const db = client.db();
+        const user = await db.collection("users").findOne({ email: credentials.email });
+
+        if (!user || !user.password) {
+          throw new Error("Usuario no encontrado o sin contraseña.");
         }
-      })
-    ],
-    pages: {
-        signIn: '/auth',
-    },
-    debug: process.env.NODE_ENV === 'development',
-    adapter: PrismaAdapter(prismadb),
-    session: {
-        strategy: "jwt",
-    },
-    jwt: {
-        secret: process.env.NEXTAUTH_JWT_SECRET,
-    },
-    secret: process.env.NEXTAUTH_SECRET
-});
+
+        const isValid = await compare(credentials.password, user.password);
+        if (!isValid) {
+          throw new Error("Credenciales inválidas.");
+        }
+
+        return {
+          id: user._id.toString(),
+          email: user.email,
+          name: user.name || null,
+        };
+      },
+    }),
+  ],
+  session: {
+    strategy: "jwt",
+  },
+  pages: {
+    signIn: "/auth/signin",
+  },
+};
+
+export default NextAuth(authOptions);

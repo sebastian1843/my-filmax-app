@@ -1,0 +1,10 @@
+/* components/AuthForm.module.css */
+.auth-form {
+    background-color: rgba(0, 0, 0, 0.75);
+    padding: 2rem;
+    width: 100%;
+    max-width: 28rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+  }
+  
